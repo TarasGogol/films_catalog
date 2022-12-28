@@ -15,7 +15,7 @@ let page = 1;
 const filmsWrapper = document.querySelector(".films");
 const loader = document.querySelector(".loader-wrapper");
 const btnShowMore = document.querySelector(".show-more");
-btnShowMore.onclick = fetchAndRenderFilms;
+
 
 
 // Отримання і вивід топ 250 фільмів
@@ -83,6 +83,9 @@ async function openFilmDetails(e){
 function renderFilmsData(film){
 	console.log("render");
 
+	// 0. Перевірка на відкритий фільм і його видалення
+	if(document.querySelector('.container-right'))document.querySelector('.container-right').remove();
+
 
 	// 1. Render container-right
 	const containerRight = document.createElement('div')
@@ -111,15 +114,33 @@ function renderFilmsData(film){
 	<div class="film__desk">
 		<p class="film__details">Year: ${film.year}</p>
 		<p class="film__details">Rate: ${film.ratingKinopoisk}</p>
-		<p class="film__details">Continuity: ${film.filmLength}</p>
-		<p class="film__details">Country: ${film.countries[0]['country']}</p>
+		<p class="film__details">Continuity: ${formatFilmLength(film.filmLength)}</p>
+		<p class="film__details">Country: ${formatCountry(film.countries)}</p>
 		<p class="film__text">${film.description}</p>
 		</div>
 	</div>`
-
 	containerRight.insertAdjacentHTML('beforeend',html)
+}
 
+function formatFilmLength(value){
+	let length = '';
+	const hours = Math.floor(value/60);
+	const minutes = value % 60;
 
+	if(hours > 0) length += hours + 'г. ';
+	if(minutes > 0) length += minutes + 'хв.'
+	
+	return length;
+}
+
+function formatCountry(data){
+	let countries = '';
+
+	for(country of data){
+		countries += country.country;
+		if(data.indexOf(country) + 1 < data.length) countries += ', '
+	}
+	return countries;
 }
 
 fetchAndRenderFilms().catch((err) => console.log(err))
